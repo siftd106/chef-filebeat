@@ -23,25 +23,25 @@ if Psych::VERSION.start_with?('1')
   YAML::ENGINE.yamler = 'syck'
 end
 
-directory node['filebeat']['prospectors_dir'] do
-  recursive true
-  action :create
-end
+# directory node['filebeat']['prospectors_dir'] do
+  # recursive true
+  # action :create
+# end
 
-file node['filebeat']['conf_file'] do
-  content JSON.parse(node['filebeat']['config'].to_json).to_yaml.lines.to_a[1..-1].join
-  notifies :restart, 'service[filebeat]' if node['filebeat']['notify_restart'] && !node['filebeat']['disable_service']
-end
+# file node['filebeat']['conf_file'] do
+  # content JSON.parse(node['filebeat']['config'].to_json).to_yaml.lines.to_a[1..-1].join
+  # notifies :restart, 'service[filebeat]' if node['filebeat']['notify_restart'] && !node['filebeat']['disable_service']
+# end
 
-prospectors = node['filebeat']['prospectors']
+# prospectors = node['filebeat']['prospectors']
 
-prospectors.each do |prospector, configuration|
-  file "prospector-#{prospector}" do
-    path ::File.join(node['filebeat']['prospectors_dir'], "prospector-#{prospector}.yml")
-    content JSON.parse(configuration.to_json).to_yaml.lines.to_a[1..-1].join
-    notifies :restart, 'service[filebeat]' if node['filebeat']['notify_restart'] && !node['filebeat']['disable_service']
-  end
-end
+# prospectors.each do |prospector, configuration|
+  # file "prospector-#{prospector}" do
+    # path ::File.join(node['filebeat']['prospectors_dir'], "prospector-#{prospector}.yml")
+    # content JSON.parse(configuration.to_json).to_yaml.lines.to_a[1..-1].join
+    # notifies :restart, 'service[filebeat]' if node['filebeat']['notify_restart'] && !node['filebeat']['disable_service']
+  # end
+# end
 
 powershell 'install filebeat as service' do
   code "& '#{node['filebeat']['windows']['base_dir']}/filebeat-#{node['filebeat']['version']}-windows/install-service-filebeat.ps1'"
